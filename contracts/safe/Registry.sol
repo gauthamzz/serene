@@ -39,7 +39,7 @@ contract SafeFactory {
 
         safe = createSafe();
 
-        SafeLike(safe).cast(targets, datas);
+        SafeLike(safe).execute(targets, datas);
     }
 
     function setLogic(address logic) public {
