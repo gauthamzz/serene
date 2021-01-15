@@ -7,6 +7,13 @@ contract Account {
     event LogDisown(address indexed safe, address indexed owner);
 
     address public owner;
+    uint public id;
+
+    function init(address _owner, uint _id) public {
+        require(id == 0, "safe/Account::already-init");
+        changeOwner(_owner);
+        id = _id;
+    }
 
     function changeOwner(address newOwner) public {
         require(owner == address(0) || msg.sender == owner, "safe/Account::not-authorized");

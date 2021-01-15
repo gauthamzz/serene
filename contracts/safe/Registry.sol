@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 interface SafeLike {
-    function changeOwner(address) external;
+    function init(address, uint) external;
     function execute(address[] calldata, bytes[] calldata) external payable;
 }
 
@@ -11,7 +11,12 @@ contract SafeFactory {
     event LogNewSafe(address indexed owner, address indexed safe);
 
     mapping (uint => address) public registry;
+    uint public count;
     address private safeLogic;
+
+    constructor(address safe) {
+        safeLogic = safe;
+    }
 
     function createClone(address target) internal returns (address result) {
         bytes20 targetBytes = bytes20(target);
@@ -25,8 +30,11 @@ contract SafeFactory {
     }
 
     function createSafe() public returns (address safe) {
+        count++;
         safe = createClone(safeLogic);
-        SafeLike(safe).changeOwner(msg.sender);
+        SafeLike(safe).init(msg.sender, count);
+
+        registry[count] = safe;
 
         emit LogNewSafe(msg.sender, safe);
     }
@@ -40,11 +48,5 @@ contract SafeFactory {
         safe = createSafe();
 
         SafeLike(safe).execute(targets, datas);
-    }
-
-    function setLogic(address logic) public {
-        require(safeLogic == address(0), "safe/Registry::already-set");
-
-        safeLogic = logic;
     }
 }

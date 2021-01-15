@@ -12,7 +12,12 @@ async function main() {
   const Safe = await ethers.getContractFactory("Account");
   const Registry = await ethers.getContractFactory("SafeFactory");
   const safe = await Safe.deploy();
-  const registry = await Registry.deploy();
+
+  await safe.deployed();
+
+  const registry = await Registry.deploy(safe.address);
+
+  await registry.deployed();
 
   console.log("Safe address:", safe.address);
   console.log("Registry address:", registry.address);
